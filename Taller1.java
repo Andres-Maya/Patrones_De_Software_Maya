@@ -1,24 +1,23 @@
-interface SatelliteSystem {
-    void transmitCommand(String command);
+interface SatelliteControl {
+    void sendCommand(String command);
 }
 
-class GlobalSatelliteController implements SatelliteSystem {
+class GlobalSatelliteController implements SatelliteControl {
 
-    // ELEMENT 1: Unique static instance (The "One and Only")
+    // ELEMENT A: Unique static instance
     private static GlobalSatelliteController instance;
 
     // ATTRIBUTES (Encapsulation)
     private String satelliteId;
-    private boolean isLinked;
+    private int orbitLevel;
 
-    // ELEMENT 2: Private Constructor
-    // Prevents other classes from using 'new GlobalSatelliteController()'
+    // ELEMENT B: Private Constructor (Prevents 'new' from outside)
     private GlobalSatelliteController() {
-        this.satelliteId = "NASA-SATELLITE-X1";
-        this.isLinked = true;
+        this.satelliteId = "ALPHA-CENTAURI-01";
+        this.orbitLevel = 500;
     }
 
-    // ELEMENT 3: Static method to get the instance
+    // ELEMENT C: Static method to get the instance
     public static GlobalSatelliteController getInstance() {
         if (instance == null) {
             instance = new GlobalSatelliteController();
@@ -28,8 +27,8 @@ class GlobalSatelliteController implements SatelliteSystem {
 
     // METHODS (Behavior & Polymorphism)
     @Override
-    public void transmitCommand(String command) {
-        System.out.println("Sending to " + satelliteId + ": [" + command + "]");
+    public void sendCommand(String command) {
+        System.out.println("Encrypting and sending to " + satelliteId + ": " + command);
     }
 
     // GETTERS AND SETTERS (Encapsulation)
@@ -37,17 +36,25 @@ class GlobalSatelliteController implements SatelliteSystem {
     public void setSatelliteId(String satelliteId) { this.satelliteId = satelliteId; }
 }
 
+/**
+ * 3. MAIN EXECUTION CLASS
+ * This must be the only PUBLIC class in the file.
+ */
 public class Main {
     public static void main(String[] args) {
-        // We cannot use 'new' here. We must call the static method.
-        SatelliteSystem controllerA = GlobalSatelliteController.getInstance();
-        SatelliteSystem controllerB = GlobalSatelliteController.getInstance();
+        // We obtain the unique instances using the Singleton method
+        GlobalSatelliteController controllerA = GlobalSatelliteController.getInstance();
+        GlobalSatelliteController controllerB = GlobalSatelliteController.getInstance();
 
-        // Using the object
-        controllerA.transmitCommand("Adjust trajectory +2.5 degrees");
+        // Testing the object behavior
+        controllerA.sendCommand("Initiate Landing Protocol");
 
-        // PROOF OF SINGLETON:
-        // Comparing memory addresses to see if they are the same object
-        System.out.println("Are both controllers the same instance? " + (controllerA == controllerB));
+        // Proof of Singleton: Both variables point to the same memory address
+        System.out.println("Checking Singleton Pattern...");
+        System.out.println("Are both instances the same? " + (controllerA == controllerB));
+
+        // Changing data in one affects the other (because they are the same object)
+        controllerB.setSatelliteId("GALAXY-X");
+        System.out.println("Updated ID in A via B: " + controllerA.getSatelliteId());
     }
 }
